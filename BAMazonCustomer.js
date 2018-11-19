@@ -85,12 +85,12 @@ const orderQuantity = purchaseID => {
     });
 };
 
+//TODO: The connection.query is not working for some reason, not sure why
 const buyProduct = (purchaseID, quantity) => {
-    const query = `SELECT * FROM products WHERE ?`;
-    connection.query(query, { item_id: purchaseID }), (err, data) => {
-        console.log(`working`);
+    const query = `SELECT * FROM products`;
+    connection.query(query), (err, data) => {
         if (err) { throw err };
         console.log(data);
+        connection.end();
     };
-    connection.end();
 }
