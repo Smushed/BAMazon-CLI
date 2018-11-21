@@ -3,6 +3,9 @@ require(`dotenv`).config()
 const mysql = require(`mysql`);
 const inquirer = require(`inquirer`);
 
+//Spacer is something I use to assist in readability of the command line
+const spacer = `----------`
+
 const connection = mysql.createConnection({
     host: process.env.HOST,
 
@@ -29,7 +32,6 @@ const displayItems = () => {
 
         //Checks for the last item that was returned, if different put a separator inbetween the lines
         let lastDepartment = ``;
-        const spacer = `----------`
         for (let i = 0; i < data.length; i++) {
             if (lastDepartment != data[i].department_name) {
                 //When the department changes from one to another, add the new line to break it up.
@@ -73,24 +75,47 @@ const orderQuantity = purchaseID => {
     }).then(answer => {
         const quantity = +answer.quantity;
         //Verification as above
-        if (!Number(quantity)) {
-            console.log(`Please enter a number`);
-            return orderQuantity();
-        } else if (quantity < 0) {
-            console.log(`Please enter a number 0 or greater`)
+        if (!Number(quantity) || quantity < 1) {
+            console.log(`Please enter a number greater than 0`);
             return orderQuantity();
         } else {
-            buyProduct(purchaseID, quantity);
+            checkStock(purchaseID, quantity);
         };
     });
 };
 
-//TODO: The connection.query is not working for some reason, not sure why
-const buyProduct = (purchaseID, quantity) => {
-    const query = `SELECT * FROM products`;
-    connection.query(query), (err, data) => {
+const checkStock = (purchaseID, quantity) => {
+    const query = `SELECT * FROM products WHERE ?`;
+    connection.query(query, { item_id: purchaseID }, (err, data) => {
         if (err) { throw err };
-        console.log(data);
-        connection.end();
-    };
-}
+
+        if (data[0].stock_quantity === 0) {
+            displayItems()
+            console.log(`We are out of ${data[0].product_name}. Please have another look through our store.`);
+        } else if (data[0].stock_quantity < quantity) {
+            //If the user picked a quantity greater than what is in stock, they are sent back to change what they'd like
+            console.log(`Insufficient stock quantity. We currently have ${data[0].stock_quantity}. Please change quantity`);
+            orderQuantity(purchaseID);
+        } else {
+            //If the user picks a product that has a value and they pick a quantity that we have in stock we move to fill the order
+            console.log(`You have selected quantity ${data[0].product_name}(s)`);
+            console.log(`${spacer}Calculating Total${spacer}`);
+
+            const remainingQuantity = data[0].stock_quantity - quantity
+            //Pass quantity and remainingQuantity to show how much they've purchased and update the database
+            //TODO Make this into a promise so I can have the total display after the database is updated
+            fillOrder(purchaseID, quantity, remainingQuantity).then(getTotal(data[0].product_name, quantity, data[0].price));
+        };
+    });
+};
+
+const getTotal = (name, quantity, price) => {
+    console.log(`Total Price: ${(quantity * price).toFixed(2)} for ${quantity} ${name}(s)`)
+};
+
+//Change quantity to quantityPurchased to help distinguish the two quantities
+const fillOrder = (purchaseID, quantityPurchased, remainingQuantity) => {
+    //Update the table to show the ID has the remaining quantity left
+    const query = `UPDATE products SET ? WHERE ?`;
+    connection.query(query, [{ stock_quantity: remainingQuantity }, { item_id: purchaseID }], err => { if (err) { throw err } });
+};
