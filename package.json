@@ -5,6 +5,7 @@
   "main": "BAMazonCustomer.js",
   "dependencies": {
     "dotenv": "^6.1.0",
+    "env": "0.0.2",
     "inquirer": "^6.2.0",
     "mysql": "^2.16.0"
   },

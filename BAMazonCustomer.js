@@ -104,18 +104,21 @@ const checkStock = (purchaseID, quantity) => {
             const remainingQuantity = data[0].stock_quantity - quantity
             //Pass quantity and remainingQuantity to show how much they've purchased and update the database
             //TODO Make this into a promise so I can have the total display after the database is updated
-            fillOrder(purchaseID, quantity, remainingQuantity).then(getTotal(data[0].product_name, quantity, data[0].price));
+            fillOrder(purchaseID, quantity, remainingQuantity, data[0].product_name, data[0].price);
         };
     });
 };
 
 const getTotal = (name, quantity, price) => {
-    console.log(`Total Price: ${(quantity * price).toFixed(2)} for ${quantity} ${name}(s)`)
+    console.log(`Total Price: ${(quantity * price).toFixed(2)} for ${quantity} ${name}(s)`);
+    console.log(`Congradulations on your new ${name}(s)! Your credit card has been charged and it's on the way.`)
+    connection.end();
 };
 
 //Change quantity to quantityPurchased to help distinguish the two quantities
-const fillOrder = (purchaseID, quantityPurchased, remainingQuantity) => {
+const fillOrder = (purchaseID, quantityPurchased, remainingQuantity, name, price) => {
     //Update the table to show the ID has the remaining quantity left
     const query = `UPDATE products SET ? WHERE ?`;
     connection.query(query, [{ stock_quantity: remainingQuantity }, { item_id: purchaseID }], err => { if (err) { throw err } });
+    getTotal(name, quantityPurchased, price);
 };
