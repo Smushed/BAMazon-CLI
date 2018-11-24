@@ -131,20 +131,42 @@ const addInventory = (length) => {
     }).then(answer => {
         const purchaseID = +answer.idOfItem;
         //Checks to ensure the input is valid
+        //Recalls the prompt if they input an invalid amount
         if (purchaseID < 1 || purchaseID > length) {
             console.log(`Please enter a valid ID`)
-            //Recalls the prompt if they input an invalid amount
             return addInventory();
         } else if (!Number(purchaseID)) {
             console.log(`Please enter a number`);
             return addInventory();
         } else {
-            return addInventoryDetails(purchaseID);
+            return restock(purchaseID, answer.product_name);
         };
     });
 };
 
-const addInventoryDetails = () => {
+const restock = (purchaseID, name) => {
+    //Gets the amount to restock
+    inquirer.prompt({
+        name: `restockAmount`,
+        type: `input`,
+        message: `How many ${name} would you like to restock?`
+    }).then(answer => {
+        const restockAmount = +answer.restockAmount;
+        //Checks to ensure the input is valid
+        //Recalls the prompt if they input an invalid amount
+        if (restockAmount < 1) {
+            console.log(`Please an amount over 0 to restock`)
+            return restock();
+        } else if (!Number(restockAmount)) {
+            console.log(`Please enter a number`);
+            return restock();
+        } else {
+            return performRestock(purchaseID, restockAmount);
+        };
+    });
+};
+
+const performRestock = (purchaseID, amount) => {
 
 };
 
