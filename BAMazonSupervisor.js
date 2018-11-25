@@ -87,7 +87,7 @@ const addNewDepartment = () => {
         }], err => {
             if (err) { throw err };
             //The please contact technology is because of the hard coded departments within the console.table
-            console.log(`${answer.name} Successfully Added.\nPlease contact technology to add it to the table`);
+            console.log(`${answer.name} Successfully Added.\nPlease contact technology to add it to the profit table`);
             supervisorMenu();
         })
     });

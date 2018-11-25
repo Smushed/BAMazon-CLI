@@ -168,10 +168,10 @@ const restock = (purchaseID, name, currentStock) => {
         //Recalls the prompt if they input an invalid amount
         if (additionalAmount < 1) {
             console.log(`Please an amount over 0 to restock`)
-            return restock(purchaseID, name);
+            return restock(purchaseID, name, currentStock);
         } else if (!Number(additionalAmount)) {
             console.log(`Please enter a number`);
-            return restock(purchaseID, name);
+            return restock(purchaseID, name, currentStock);
         } else {
             //If they entered a valid number then calculate how much stock we will have after restocking and run the restock method
             const restockAmount = additionalAmount + currentStock;

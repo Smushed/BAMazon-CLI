@@ -5,19 +5,21 @@ Developer: Kevin Flerlage<br />
 Deployment Date: 11/25/18<br />
 For: Northwestern Coding Bootcamp<br />
 
-## Description
+## **Description**
 
 This is a mock up Amazon webstore/warehouse command line app. There are 3 seperate files which the user can run from Node, each detailed below.<br />
+
+The readme is broken up into the categories as detailed below. It will go over each aspect of the application and highlight where user input is validated.<br />
+
 - BAMazonCustomer
   - Customer App which the user can see the items currently listed in the store and purchase them if desired
 - BAMazonManager
   - Manager App which lets the user do the following actions
     - View Products for Sale
-      - Like the Customer App above
     - View Low Inventory Levels
-      - Any product with fewer than 5 items remaining in store
+      - Displays any product with fewer than 5 items remaining in store
     - Add to Inventory
-      - Allows the user to add additional product to the database
+      - Allows the user to add to the stock of a product in the store
     - Add New Product
       - Allows the user to add new products to the store
 - BAMazon Supervisor
@@ -27,7 +29,7 @@ This is a mock up Amazon webstore/warehouse command line app. There are 3 sepera
     - Add New Department
       - Allows the user to add new departments to the database
 
-## Database
+## **Database**
 
 The inventory in this mock up webstore is run with mySQL. Most of the interaction is driven from the products table in the database. Product data such as: id number, name, department, price, stock amount and value of the sold amount is stored here. The ID number is the primary key for this, and is auto generated.<br />
 
@@ -37,7 +39,7 @@ The departments table is only used within the supervisor app. This is used in de
 
 ![Departments Table](./images/departmentsDatabase.PNG)<br />
 
-## BAMazon Customer
+## **BAMazon Customer**
 
 As a customer in this app the user only have access to view the products currently in stock and select one to purchase based off the ID of the item.<br /><br />
 On start the list of items which are currently available are displayed ordered by department. Customers then have the option to pick the item they would like to purchase based off ID number.<br />
@@ -66,7 +68,7 @@ After the user selects an ID which is valid, and an amount which is currently in
 
 ![Database Updated](./images/customerDatabaseUpdated.PNG)<br />
 
-## BAMazon Manager
+## **BAMazon Manager**
 
 As the manager the user has the ability to view the products which are currently for sale in the app, view the items with inventory levels below five, add inventory to the warehouse as well as add a new product.<br />
 
@@ -74,6 +76,94 @@ When the user starts the app they are prompted with the choices that were detail
 
 ![Manager Menu](./images/managerStart.PNG)<br />
 
+### **Products for Sale**
+
 In selecting View Products for Sale the user will have the same display as the customer app.<br />
 
-![View Products Display](./images/managerViewProducts.PNG)
+![View Products Display](./images/managerViewProducts.PNG)<br />
+
+### **View Low Inventory**
+
+After selecting view low inventory, it will run the same process as View Products for sale, but only display items with a quantity of less than five. After displaying all the low inventory items, it will prompt the user if they would like to restock an item. This goes to the same process as Add to Inventory from the menu.<br />
+
+![View Products with Low Inventory](./images/managerViewLowInventory.PNG)<br />
+
+### **Restocking / Add to Inventory**
+
+In selecting Add to Inventory or selecting Yes after viewing low inventory the program prompts the user for the ID number of the item to restock. This goes through the same validation process as the customer requesting to purchase an item above. The ID must be a number and must be an ID that is currently being used by a product.<br />
+
+![Restocking ID Validation](./images/managerAddInventoryValidate.PNG)<br />
+
+When a valid ID was input, it will prompt the user with the name of the item they are looking to restock to ensure it's the correct item they wanted to select. The app will also request how many the user would like to restock. The data will be validated to ensure the amount is a number and is over 0.<br />
+
+![Restock Quantity Validation](./images/managerQuantityValidation.PNG)<br />
+
+![Restock Successful](./images/managerRestockSuccessful.PNG)<br />
+
+After restocking was successful, this communicates to the database and updates the amount in the database with the amount that was restocked.<br />
+
+![Before Restocking Ergonomic Chair](./images/managerBeforeRestock.PNG)<br />
+
+![After Restocking Ergonomic Chair](./images/managerAfterRestock.PNG)<br />
+
+### **Add New Product**
+
+When the user selects Add New Product they are first prompted with the name of the new item to be added to the app. The name contains no validation however, it is limited to 255 characters as that is the limit in the database.<br />
+
+![Name of the New Item](./images/managerNewItemName.PNG)<br />
+
+After entering the name of the item, the prompt will allow the user to assign it to a department. As of now, these are hard coded into a list to prevent typo's, blank entries and other variance which would skew the display for the customer. In a future update this will be dynamic with the addition of new departments.<br />
+
+![Department of the New Item](./images/managerNewItemDepartment.PNG)<br />
+
+Once a name and a department has been entered for the new item the user will be prompted for a price. This, again, follows the validation above with restocking where the entered amount must be a number. It can take any number up to $99,999,999.99. Any additional places after the decimal will be dropped.<br />
+
+![New Item Price Validation](./images/managerNewItemValidation.PNG)<br />
+
+![New Item Price Success](./images/managerNewItemPriceSuccess.PNG)<br />
+
+Lastly, the app will ask the user how many items are currently in stock. As above, this requires a number. The stock amount must be an integer.<br />
+
+![New Item Stock Validation](./images/managerNewItemStockValidation.PNG)<br />
+
+![New Item Success](./images/managerNewItemSuccess.PNG)<br />
+
+This will then update the database with the information that the manager provided. It will then be immediately available for purchase from the customer app.
+
+![New Item Added to Database](./images/managerNewItemDatabase.PNG)<br />
+
+![New Item Available for Purchase](./images/customerNewItemAvailable.PNG)<br />
+
+## **BAMazon Supervisor**
+
+On startup the supervisor app has the three options that were detailed above. The supervisor app gives the user the ability to see the sales by each department and if each department is profitable or not. As with the manager app, when a process is done the app loops back to the menu where there the user can disconnect. By selecting **disconnect** it will end the app.<br />
+
+![Supervisor Menu](./images/supervisorMenu.PNG)<br />
+
+### **Add New Department**
+
+When running Add New Department the first prompt is asking for the department's name. This has no validation on it however, there is a limit of 255 characters as that is what the database can hold.<br />
+
+![Add New Department Name](./images/supervisorNewDepartmentName.PNG)<br />
+
+Next, the user must enter the new department's overhead costs. This will be used in the profit formula in the view sales portion. As with the other apps where users were prompted to input numbers, this contains validation that the input is a number. It can take any number up to $99,999,999.99. Any additional places after the decimal will be dropped.<br />
+
+![Add New Department Overhead Validation](./images/supervisorOverheadValidation.PNG)<br />
+
+After the name and the amount of overhead the department has been entered a success message will pop up along with a note to contact technology. This is because many of the values around departments are hardcoded. For example, the manager app will not be able to add new products to the department just added. This will come in a future update.
+
+![Add New Department Success](./images/supervisorNewDepartmentSuccess.PNG)<br />
+
+### **View Departmental Profit**
+
+In selecting view departmental profit, the user will be shown all departments which have been entered into the system. As mentioned above, these are currently hardcoded.<br />
+
+![View Departmental Profit](./images/supervisorViewDepartmentalProfit.PNG)<br />
+
+The values are all driven from the database with the execption of total_profit. That is calculated by taking over_head_costs and subtracting it from product_sales. This table is populated with a constructor. It takes the data from the departments table, creates an object with it, then iterates through the products table and sums up the sales from each of the items related to the department and attachs it to the department's object.<br /><br />
+
+### **Reflection**
+
+This assignment was difficult at times, yet rewarding when completed. Integrating mySQL with Node and working within the command line posed problems, but taking it in small chunks made the process managable.<br />
+
+When I go back to this assignment I would like to make the app scalable with adding departments in the supervisor app and having the manager and customer app able to view the addition.
