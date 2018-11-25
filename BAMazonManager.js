@@ -2,7 +2,6 @@
 require(`dotenv`).config()
 const mysql = require(`mysql`);
 const inquirer = require(`inquirer`);
-const cTable = require(`console.table`);
 
 //Spacer is something I use to assist in readability of the command line
 const spacer = `----------`
@@ -60,9 +59,9 @@ const managerMenu = () => {
             case `Disconnect`:
                 connection.end();
                 break;
-        }
-    })
-}
+        };
+    });
+};
 
 const viewProducts = () => {
     //This is the same display as the customer view
@@ -84,7 +83,7 @@ const viewProducts = () => {
         //Passing length to make the app scalable
         managerMenu();
     });
-}
+};
 
 const viewLowInventory = () => {
     //This is the same display as the customer view
@@ -129,7 +128,7 @@ const viewLowInventory = () => {
             };
         });
     });
-}
+};
 
 const addInventory = (length) => {
     //Lets the manager add additional stock to any item in the inventory

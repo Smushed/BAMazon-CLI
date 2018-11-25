@@ -2,7 +2,6 @@
 require(`dotenv`).config()
 const mysql = require(`mysql`);
 const inquirer = require(`inquirer`);
-const cTable = require(`console.table`);
 
 //Spacer is something I use to assist in readability of the command line
 const spacer = `----------`
