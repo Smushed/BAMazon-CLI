@@ -29,7 +29,6 @@ const displayItems = () => {
     const query = `SELECT * FROM products ORDER BY department_name`;
     connection.query(query, (err, data) => {
         if (err) { throw err };
-
         //Checks for the last item that was returned, if different put a separator inbetween the lines
         let lastDepartment = ``;
         for (let i = 0; i < data.length; i++) {
