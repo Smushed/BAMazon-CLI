@@ -2,6 +2,7 @@
 require(`dotenv`).config()
 const mysql = require(`mysql`);
 const inquirer = require(`inquirer`);
+const cTable = require(`console.table`);
 
 //Spacer is something I use to assist in readability of the command line
 const spacer = `----------`
@@ -100,9 +101,9 @@ const checkStock = (purchaseID, quantity) => {
             //If the user picks a product that has a value and they pick a quantity that we have in stock we move to fill the order
             console.log(`You have selected quantity ${quantity} of ${data[0].product_name}(s)`);
             console.log(`${spacer}Calculating Total${spacer}`);
-
             const remainingQuantity = data[0].stock_quantity - quantity;
             //If current item sales are null then return 0, otherwise return the total product sales
+            //It will be null if the manager app adds a product
             let currentItemSales = 0;
             if (data[0].product_sales != null) {
                 currentItemSales = data[0].product_sales;
