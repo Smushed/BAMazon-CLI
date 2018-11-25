@@ -90,7 +90,7 @@ const checkStock = (purchaseID, quantity) => {
 
         if (data[0].stock_quantity === 0) {
             displayItems()
-            console.log(`We are out of ${data[0].product_name}. Please have another look through our store.`);
+            console.log(`We are out of ${data[0].product_name}(s). Please have another look through our store.`);
         } else if (data[0].stock_quantity < quantity) {
             //If the user picked a quantity greater than what is in stock, they are sent back to change what they'd like
             console.log(`Insufficient stock quantity. We currently have ${data[0].stock_quantity}. Please change quantity`);
