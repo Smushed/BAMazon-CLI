@@ -57,10 +57,10 @@ const orderItems = (length) => {
         if (purchaseID < 1 || purchaseID > length) {
             console.log(`Please enter a valid ID`)
             //Recalls the prompt if they input an invalid amount
-            return orderItems();
+            return orderItems(length);
         } else if (!Number(purchaseID)) {
             console.log(`Please enter a number`);
-            return orderItems();
+            return orderItems(length);
         } else {
             return orderQuantity(purchaseID);
         };
@@ -77,7 +77,7 @@ const orderQuantity = purchaseID => {
         //Verification as above
         if (!Number(quantity) || quantity < 1) {
             console.log(`Please enter a number greater than 0`);
-            return orderQuantity();
+            return orderQuantity(purchaseID);
         } else {
             checkStock(purchaseID, quantity);
         };
@@ -98,27 +98,45 @@ const checkStock = (purchaseID, quantity) => {
             orderQuantity(purchaseID);
         } else {
             //If the user picks a product that has a value and they pick a quantity that we have in stock we move to fill the order
-            console.log(`You have selected quantity ${data[0].product_name}(s)`);
+            console.log(`You have selected quantity ${quantity} of ${data[0].product_name}(s)`);
             console.log(`${spacer}Calculating Total${spacer}`);
 
-            const remainingQuantity = data[0].stock_quantity - quantity
+            const remainingQuantity = data[0].stock_quantity - quantity;
+            //If current item sales are null then return 0, otherwise return the total product sales
+            let currentItemSales = 0;
+            if (data[0].product_sales != null) {
+                currentItemSales = data[0].product_sales;
+            };
             //Pass quantity and remainingQuantity to show how much they've purchased and update the database
-            //TODO Make this into a promise so I can have the total display after the database is updated
-            fillOrder(purchaseID, quantity, remainingQuantity, data[0].product_name, data[0].price);
+            fillOrder(purchaseID, quantity, remainingQuantity, data[0].product_name, data[0].price, currentItemSales);
         };
     });
 };
 
 const getTotal = (name, quantity, price) => {
     console.log(`Total Price: ${(quantity * price).toFixed(2)} for ${quantity} ${name}(s)`);
-    console.log(`Congradulations on your new ${name}(s)! Your credit card has been charged and it's on the way.`)
+    console.log(`Congratulations on your new ${name}(s)! Your credit card has been charged and it's on the way.`)
     connection.end();
 };
 
 //Change quantity to quantityPurchased to help distinguish the two quantities
-const fillOrder = (purchaseID, quantityPurchased, remainingQuantity, name, price) => {
+const fillOrder = (purchaseID, quantityPurchased, remainingQuantity, name, price, currentItemSales) => {
     //Update the table to show the ID has the remaining quantity left
     const query = `UPDATE products SET ? WHERE ?`;
-    connection.query(query, [{ stock_quantity: remainingQuantity }, { item_id: purchaseID }], err => { if (err) { throw err } });
+    connection.query(query, [
+        {
+            stock_quantity: remainingQuantity
+        }, {
+            item_id: purchaseID
+        }], err => { if (err) { throw err } });
+    //Updates the product sales in the database to keep track of department earnings
+    const saleAmount = quantityPurchased * price;
+    const newSaleTotal = saleAmount + currentItemSales;
+    connection.query(`UPDATE products SET ? WHERE ?`, [
+        {
+            product_sales: newSaleTotal
+        }, {
+            item_id: purchaseID
+        }], err => { if (err) { throw err } });
     getTotal(name, quantityPurchased, price);
 };
